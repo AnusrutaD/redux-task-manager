@@ -1,122 +1,65 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useSelector, useDispatch } from "react-redux";
+import { addTask, deleteTask, toggleTask } from "./store/tasksSlice";
+import { useState } from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const dispatch = useDispatch();
+  const tasks = useSelector((state) => state.tasks.tasks);
+  const [input, setInput] = useState("");
+
+  const handleAdd = () => {
+    // console.log("added task!!!!")
+    if (input.trim()) {
+      dispatch(addTask(input.trim()));
+      setInput("");
+    }
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="min-h-screen bg-slate-200 flex items-start justify-center pt-10">
+      <div className="w-full max-w-md bg-cyan-300 flex flex-col rounded-xl p-4 gap-3">
+        <h1 className="bg-cyan-500 text-center font-bold p-2 rounded-lg">
+          Redux Task Manager
+        </h1>
+        <div className="flex items-center">
+          <input
+            className="flex-1 bg-cyan-100 text-center outline-none rounded-l p-2
+          focus:bg-white focus:ring-2 focus:ring-cyan-500 transition-all duration-75"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+            placeholder="Add a task..."
+          />
+          <button
+            className="bg-cyan-900 text-white rounded-r px-4 py-2
+          hover:bg-cyan-800 active:scale-95 transition-transform duration-75"
+            onClick={handleAdd}
+          >
+            Add
+          </button>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
+        <div className="flex flex-col gap-2">
+          {tasks.map((task) => (
+            <div key={task.id} className="bg-white flex items-center justify-between p-2 rounded-lg">
+              <input
+                type="checkbox"
+                checked={task.completed}
+                onChange={() => dispatch(toggleTask(task.id))}
+                className="cursor-pointer w-4 h-4"
+              />
+              <span className={`flex-1 mx-2 ${task.completed ? "line-through text-gray-400" : ""}`}>
+                {task.text}
+              </span>
+              <button
+                onClick={() => dispatch(deleteTask(task.id))}
+                className="text-red-400 hover:text-red-600 font-bold transition-colors duration-75"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      </div>
+    </div>
+  );
 }
-
-export default App
